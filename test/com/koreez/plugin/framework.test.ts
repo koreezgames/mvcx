@@ -35,7 +35,11 @@ describe("mvcx", () => {
             facade.registerCommand("notification", function(name: string) {
                 assert.equal("notification", name);
                 assert.instanceOf(this, Facade);
-                done();
+                this.executeCommand(name, function(subName: string) {
+                    assert.equal("notification", name);
+                    assert.instanceOf(this, Facade);
+                    done();
+                });
             });
             facade.sendNotification("notification");
         }
@@ -48,8 +52,7 @@ describe("mvcx", () => {
 
         class TestProxy extends Proxy<TestData> {
             constructor() {
-                super();
-                this.vo = new TestData();
+                super(new TestData());
             }
         }
 
@@ -106,7 +109,9 @@ describe("mvcx", () => {
         function create() {
             const facade = Facade.Instance;
             facade.initialize(false);
+            // @ts-ignore
             facade.registerMediator(TestMediator);
+            // @ts-ignore
             const testMediator = facade.retrieveMediator(TestMediator) as TestMediator;
             let handledNotifications = 0;
             facade.sendNotification("notification");
@@ -194,8 +199,10 @@ describe("mvcx", () => {
         function create() {
             const facade = Facade.Instance;
             facade.initialize(false);
+            // @ts-ignore
             facade.registerDynamicMediator(TestView, TestMediator);
             const testView = new TestView();
+            // @ts-ignore
             const testMediator = facade.retrieveMediator(TestMediator) as TestMediator;
             let handledNotifications = 0;
             facade.sendNotification("notification");

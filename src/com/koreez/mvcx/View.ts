@@ -31,7 +31,7 @@ export class View {
         };
     }
 
-    public registerMediator(mediator: new () => Mediator<any>): Mediator<any> {
+    public registerMediator<T>(mediator: new () => Mediator<T>): Mediator<T> {
         const mediatorInstance = new mediator();
         const name = mediatorInstance.constructor.name;
         this.__mediatorsMap.set(name, mediatorInstance);
@@ -39,7 +39,7 @@ export class View {
         return mediatorInstance;
     }
 
-    public removeMediator(mediator: new () => Mediator<any>): void {
+    public removeMediator<T>(mediator: new () => Mediator<T>): void {
         if (!this.hasMediator(mediator)) {
             return;
         }
@@ -51,7 +51,7 @@ export class View {
         mediatorInstance.onRemove();
     }
 
-    public sleepMediator(mediator: new () => Mediator<any>): void {
+    public sleepMediator<T>(mediator: new () => Mediator<T>): void {
         if (!this.hasMediator(mediator)) {
             return;
         }
@@ -61,7 +61,7 @@ export class View {
         mediatorInstance.onSleep();
     }
 
-    public wakeMediator(mediator: new () => Mediator<any>): void {
+    public wakeMediator<T>(mediator: new () => Mediator<T>): void {
         if (!this.hasMediator(mediator)) {
             return;
         }
@@ -71,11 +71,11 @@ export class View {
         mediatorInstance.onWake();
     }
 
-    public retrieveMediator(mediator: new () => Mediator<any>): Mediator<any> {
+    public retrieveMediator<T>(mediator: new () => Mediator<T>): Mediator<any> {
         return this.__mediatorsMap.get(mediator.name);
     }
 
-    public hasMediator(mediator: new () => Mediator<any>): boolean {
+    public hasMediator<T>(mediator: new () => Mediator<T>): boolean {
         return this.__mediatorsMap.has(mediator.name);
     }
 

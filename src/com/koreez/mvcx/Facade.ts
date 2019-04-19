@@ -35,35 +35,44 @@ export class Facade {
     public registerDynamicMediator(view: new (...args: any[]) => IDynamicView, mediator: new () => DynamicMediator<IDynamicView>): void {
         return this.__view.registerDynamicMediator(view, mediator);
     }
-    public registerMediator(mediator: new () => Mediator<any>): Mediator<any> {
+
+    public registerMediator<T>(mediator: new () => Mediator<T>): Mediator<T> {
         return this.__view.registerMediator(mediator);
     }
-    public removeMediator(mediator: new () => Mediator<any>): void {
+
+    public removeMediator<T>(mediator: new () => Mediator<T>): void {
         return this.__view.removeMediator(mediator);
     }
-    public sleepMediator(mediator: new () => Mediator<any>): void {
+
+    public sleepMediator<T>(mediator: new () => Mediator<T>): void {
         return this.__view.sleepMediator(mediator);
     }
-    public wakeMediator(mediator: new () => Mediator<any>): void {
+
+    public wakeMediator<T>(mediator: new () => Mediator<T>): void {
         return this.__view.wakeMediator(mediator);
     }
-    public retrieveMediator(mediator: new () => Mediator<any>): Mediator<any> {
+
+    public retrieveMediator<T>(mediator: new () => Mediator<T>): Mediator<T> {
         return this.__view.retrieveMediator(mediator);
     }
-    public hasMediator(mediator: new () => Mediator<any>): boolean {
+
+    public hasMediator<T>(mediator: new () => Mediator<T>): boolean {
         return this.__view.hasMediator(mediator);
     }
     //
-    public registerProxy(proxy: new () => Proxy<any>): Proxy<any> {
+    public registerProxy<T>(proxy: new () => Proxy<T>): Proxy<T> {
         return this.__model.registerProxy(proxy);
     }
-    public removeProxy(proxy: new () => Proxy<any>): void {
+
+    public removeProxy<T>(proxy: new () => Proxy<T>): void {
         return this.__model.removeProxy(proxy);
     }
-    public retrieveProxy(proxy: new () => Proxy<any>): Proxy<any> {
+
+    public retrieveProxy<T>(proxy: new () => Proxy<T>): Proxy<T> {
         return this.__model.retrieveProxy(proxy);
     }
-    public hasProxy(proxy: new () => Proxy<any>): boolean {
+
+    public hasProxy<T>(proxy: new () => Proxy<T>): boolean {
         return this.__model.hasProxy(proxy);
     }
     //
