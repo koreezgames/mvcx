@@ -157,7 +157,7 @@ describe("mvcx", () => {
             private _uuid;
 
             constructor() {
-                this._uuid = TestMediator.name;
+                this._uuid = `TestMediator`;
                 this.construct();
             }
         }
