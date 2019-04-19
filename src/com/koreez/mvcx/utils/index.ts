@@ -47,7 +47,7 @@ export class MVCMap<T> {
 
     public forEach(fn: (key: string, value?: T) => any): void {
         for (const key in this.__map) {
-            if (this.hasOwnProperty(key)) {
+            if (this.__map.hasOwnProperty(key)) {
                 fn(key, this.__map[key]);
             }
         }
