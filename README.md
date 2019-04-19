@@ -1,7 +1,7 @@
 # mvcx
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/koreezgames/mvcx/blob/master/LICENSE)
-[![Build Status](https://secure.travis-ci.org/koreezgames/mvcx.svg?branch=master)](https://travis-ci.org/koreezgames/mvcx)
+[![Build Status](https://secure.travis-ci.org/koreezgames/mvcx.svg?branch=master)](https://travis-ci.com/koreezgames/mvcx.svg?branch=master)
 [![npm version](https://badge.fury.io/js/%40koreez%2Fmvcx.svg)](https://badge.fury.io/js/%40koreez%2Fmvcx)
 [![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
