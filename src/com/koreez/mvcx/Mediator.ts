@@ -30,8 +30,9 @@ export class Mediator<T> {
 
     protected _notificationSubscriptionChange: (notification: string, mediatorName: string, subscribe: boolean) => void;
 
-    constructor() {
+    constructor(viewComponent: T) {
         this.__interests = new MVCMap();
+        this.setViewComponent(viewComponent);
     }
 
     public onRegister(

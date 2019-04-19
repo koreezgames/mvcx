@@ -15,6 +15,10 @@ export class Proxy<T> {
     private __vo: T;
     private __logger: (consoleArgs: string[], name: string, action: string) => void;
 
+    constructor(vo?: T) {
+        this.setVO(vo);
+    }
+
     public onRegister(facade: Facade): void {
         this.__facade = facade;
         this.__logger = this.__facade.debug ? logProxy : logNone;
@@ -25,15 +29,11 @@ export class Proxy<T> {
         this.__logger(Proxy._consoleArgs, this.constructor.name, "remove");
     }
 
-    public getData(): T {
-        return this.__vo;
-    }
-
     public get vo(): T {
         return this.__vo;
     }
 
-    public set vo(value: T) {
+    protected setVO(value: T) {
         this.__vo = value;
     }
 
