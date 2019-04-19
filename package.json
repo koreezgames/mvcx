@@ -1,6 +1,6 @@
 {
     "name": "@koreez/mvcx",
-    "version": "1.0.0-alpha.01",
+    "version": "1.0.0-alpha.02",
     "description": "mvcx",
     "main": "lib/index.js",
     "typings": "lib/index.d.ts",
@@ -43,9 +43,7 @@
         "url": "https://github.com/koreezgames/mvcx/issues"
     },
     "homepage": "https://github.com/koreezgames/mvcx#readme",
-    "dependencies": {
-        "eventemitter3": "^3.1.0"
-    },
+    "dependencies": {},
     "peerDependencies": {},
     "devDependencies": {
         "@types/bluebird": "^3.5.26",
