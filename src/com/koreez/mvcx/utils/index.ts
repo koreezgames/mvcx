@@ -21,30 +21,34 @@ export function logProxy(consoleArgs: string[], name: string, action: string): v
 export function logNone(...args: any[]): void {}
 
 export class MVCMap<T> {
-    [key: string]: any;
+    private __map: any;
+
+    constructor() {
+        this.__map = new Object();
+    }
 
     public set(key: string, value: T): void {
-        this[key] = value;
+        this.__map[key] = value;
     }
 
     public get(key: string): T {
-        return this[key];
+        return this.__map[key];
     }
 
     public has(key: string): boolean {
-        return !!this[key];
+        return !!this.__map[key];
     }
 
     public delete(key: string): T {
-        const value = this[key];
-        delete this[key];
+        const value = this.__map[key];
+        delete this.__map[key];
         return value;
     }
 
     public forEach(fn: (key: string, value?: T) => any): void {
-        for (const key in this) {
+        for (const key in this.__map) {
             if (this.hasOwnProperty(key)) {
-                fn(key, this[key]);
+                fn(key, this.__map[key]);
             }
         }
     }
