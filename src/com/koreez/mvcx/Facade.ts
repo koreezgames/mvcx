@@ -28,7 +28,7 @@ export class Facade {
 
     public sendNotification(notification: string, ...args: any[]) {
         this.__logger(Facade._consoleArgs, notification);
-        this.__controller.executeCommand(notification, ...args);
+        this.__controller.executeCommand(notification, undefined, ...args);
         this.__view.handleNotification(notification, ...args);
     }
 
@@ -67,11 +67,15 @@ export class Facade {
         return this.__model.hasProxy(proxy);
     }
     //
-    public registerCommand(key: string, command: ICommand): void {
-        return this.__controller.registerCommand(key, command);
+    public registerCommand(notificationName: string, command: ICommand): void {
+        return this.__controller.registerCommand(notificationName, command);
     }
-    public removeCommand(key: string): void {
-        return this.__controller.removeCommand(key);
+    public removeCommand(notificationName: string): void {
+        return this.__controller.removeCommand(notificationName);
+    }
+
+    public executeCommand(notificationName: string, command: ICommand, ...args: any[]): void {
+        return this.__controller.executeCommand(notificationName, command, args);
     }
     //
     public initialize(debug: boolean) {

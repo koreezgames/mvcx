@@ -21,21 +21,21 @@ export class Controller {
         this.__commandsMap = new MVCMap();
     }
 
-    public registerCommand(key: string, command: ICommand): void {
-        this.__commandsMap.set(key, command);
+    public registerCommand(notificationName: string, command: ICommand): void {
+        this.__commandsMap.set(notificationName, command);
     }
 
-    public removeCommand(key: string): void {
-        this.__commandsMap.delete(key);
+    public removeCommand(notificationName: string): void {
+        this.__commandsMap.delete(notificationName);
     }
 
-    public executeCommand(key: string, ...args: any[]): void {
-        const command = this.__commandsMap.get(key);
-        if (!command) {
+    public executeCommand(notificationName: string, command: ICommand, ...args: any[]): void {
+        const localCommand = command || this.__commandsMap.get(notificationName);
+        if (!localCommand) {
             return;
         }
-        this.__logger(Controller._consoleArgs, key, command.name);
-        command.call(this.__facade, key, ...args);
+        this.__logger(Controller._consoleArgs, notificationName, localCommand.name);
+        localCommand.call(this.__facade, notificationName, ...args);
     }
 }
 
