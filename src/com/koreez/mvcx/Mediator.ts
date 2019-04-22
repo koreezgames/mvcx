@@ -30,9 +30,10 @@ export class Mediator<T> {
 
     protected _notificationSubscriptionChange: (notification: string, mediatorName: string, subscribe: boolean) => void;
 
-    constructor(viewComponent: T) {
+    constructor(viewComponent?: T) {
         this.__interests = new MVCMap();
-        this.setViewComponent(viewComponent);
+        // tslint:disable-next-line:no-unused-expression
+        viewComponent && this.setViewComponent(viewComponent);
     }
 
     public onRegister(

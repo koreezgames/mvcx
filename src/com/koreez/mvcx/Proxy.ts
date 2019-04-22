@@ -16,7 +16,8 @@ export class Proxy<T> {
     private __logger: (consoleArgs: string[], name: string, action: string) => void;
 
     constructor(vo?: T) {
-        this.setVO(vo);
+        // tslint:disable-next-line:no-unused-expression
+        vo && this.setVO(vo);
     }
 
     public onRegister(facade: Facade): void {

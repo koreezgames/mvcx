@@ -27,7 +27,7 @@ export default class BoardProxy extends Proxy<BoardVO> {
 
     public onRegister(facade: Facade): void {
         super.onRegister(facade);
-        this.vo = new BoardVO();
+        this.setVO(new BoardVO());
     }
 
     public jsonDataGet() {

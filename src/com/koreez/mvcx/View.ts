@@ -14,14 +14,14 @@ export class View {
         this.__eventsMap = new MVCMap();
     }
 
-    public registerDynamicMediator(view: new (...args: any[]) => IDynamicView, mediator: new () => DynamicMediator<IDynamicView>): void {
+    public registerDynamicMediator<V extends IDynamicView, M extends DynamicMediator<V>>(
+        view: new (...args: any[]) => V,
+        mediator: new (viewComponent: V) => M
+    ): void {
         const self = this;
         view.prototype.construct = function() {
-            const mediatorInstance: Mediator<any> = new mediator();
+            const mediatorInstance: M = new mediator(this);
             self.__mediatorsMap.set(this.uuid, mediatorInstance);
-
-            // @ts-ignore
-            mediatorInstance.setViewComponent(this);
             mediatorInstance.onRegister(self.__facade, self.__onMediatorNotificationSubscriptionChange);
         };
 
@@ -31,7 +31,7 @@ export class View {
         };
     }
 
-    public registerMediator<T>(mediator: new () => Mediator<T>): Mediator<T> {
+    public registerMediator<V, M extends Mediator<V>>(mediator: new (viewComponent?: V) => M): Mediator<V> {
         const mediatorInstance = new mediator();
         const name = mediatorInstance.constructor.name;
         this.__mediatorsMap.set(name, mediatorInstance);
@@ -39,7 +39,7 @@ export class View {
         return mediatorInstance;
     }
 
-    public removeMediator<T>(mediator: new () => Mediator<T>): void {
+    public removeMediator<V, M extends Mediator<V>>(mediator: new (viewComponent?: V) => M): void {
         if (!this.hasMediator(mediator)) {
             return;
         }
@@ -51,7 +51,7 @@ export class View {
         mediatorInstance.onRemove();
     }
 
-    public sleepMediator<T>(mediator: new () => Mediator<T>): void {
+    public sleepMediator<V, M extends Mediator<V>>(mediator: new (viewComponent?: V) => M): void {
         if (!this.hasMediator(mediator)) {
             return;
         }
@@ -61,7 +61,7 @@ export class View {
         mediatorInstance.onSleep();
     }
 
-    public wakeMediator<T>(mediator: new () => Mediator<T>): void {
+    public wakeMediator<V, M extends Mediator<V>>(mediator: new (viewComponent?: V) => M): void {
         if (!this.hasMediator(mediator)) {
             return;
         }
@@ -71,11 +71,11 @@ export class View {
         mediatorInstance.onWake();
     }
 
-    public retrieveMediator<T>(mediator: new () => Mediator<T>): Mediator<any> {
+    public retrieveMediator<V, M extends Mediator<V>>(mediator: new (viewComponent?: V) => M): Mediator<V> {
         return this.__mediatorsMap.get(mediator.name);
     }
 
-    public hasMediator<T>(mediator: new () => Mediator<T>): boolean {
+    public hasMediator<V, M extends Mediator<V>>(mediator: new (viewComponent?: V) => M): boolean {
         return this.__mediatorsMap.has(mediator.name);
     }
 

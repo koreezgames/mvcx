@@ -32,31 +32,34 @@ export class Facade {
         this.__view.handleNotification(notification, ...args);
     }
 
-    public registerDynamicMediator(view: new (...args: any[]) => IDynamicView, mediator: new () => DynamicMediator<IDynamicView>): void {
+    public registerDynamicMediator<V extends IDynamicView, M extends DynamicMediator<V>>(
+        view: new (...args: any[]) => V,
+        mediator: new (viewComponent?: V) => M
+    ): void {
         return this.__view.registerDynamicMediator(view, mediator);
     }
 
-    public registerMediator<T>(mediator: new () => Mediator<T>): Mediator<T> {
+    public registerMediator<V, M extends Mediator<V>>(mediator: new (viewComponent?: V) => M): Mediator<V> {
         return this.__view.registerMediator(mediator);
     }
 
-    public removeMediator<T>(mediator: new () => Mediator<T>): void {
+    public removeMediator<V, M extends Mediator<V>>(mediator: new (viewComponent?: V) => M): void {
         return this.__view.removeMediator(mediator);
     }
 
-    public sleepMediator<T>(mediator: new () => Mediator<T>): void {
+    public sleepMediator<V, M extends Mediator<V>>(mediator: new (viewComponent?: V) => M): void {
         return this.__view.sleepMediator(mediator);
     }
 
-    public wakeMediator<T>(mediator: new () => Mediator<T>): void {
+    public wakeMediator<V, M extends Mediator<V>>(mediator: new (viewComponent?: V) => M): void {
         return this.__view.wakeMediator(mediator);
     }
 
-    public retrieveMediator<T>(mediator: new () => Mediator<T>): Mediator<T> {
+    public retrieveMediator<V, M extends Mediator<V>>(mediator: new (viewComponent?: V) => M): Mediator<V> {
         return this.__view.retrieveMediator(mediator);
     }
 
-    public hasMediator<T>(mediator: new () => Mediator<T>): boolean {
+    public hasMediator<V, M extends Mediator<V>>(mediator: new (viewComponent?: V) => M): boolean {
         return this.__view.hasMediator(mediator);
     }
     //
@@ -84,7 +87,7 @@ export class Facade {
     }
 
     public executeCommand(notificationName: string, command: ICommand, ...args: any[]): void {
-        return this.__controller.executeCommand(notificationName, command, args);
+        return this.__controller.executeCommand(notificationName, command, ...args);
     }
     //
     public initialize(debug: boolean) {
