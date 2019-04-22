@@ -15,17 +15,17 @@ export default class ProgressViewMediator extends Mediator<ProgressView> {
         this._subscribe(GameState.FILE_LOAD_COMPLETE, this._onFileLoadComplete);
         this._subscribe(GameState.LOAD_COMPLETE, this._onLoadComplete);
 
-        this.setViewComponent(new ProgressView());
-        (<any>window).game.world.add(this.viewComponent);
+        this.setView(new ProgressView());
+        (<any>window).game.world.add(this.view);
     }
 
     private _onLoadStart(): void {
-        this.viewComponent.show();
+        this.view.show();
     }
     private _onFileLoadComplete(progress): void {
-        this.viewComponent.updatePercent(progress);
+        this.view.updatePercent(progress);
     }
     private _onLoadComplete(): void {
-        this.viewComponent.hide();
+        this.view.hide();
     }
 }

@@ -6,8 +6,8 @@ export class Mediator<T> {
         return this.constructor.name;
     }
 
-    public get viewComponent(): T {
-        return this.__viewComponent;
+    public get view(): T {
+        return this.__view;
     }
 
     protected get facade(): Facade {
@@ -24,16 +24,16 @@ export class Mediator<T> {
     ];
 
     private __facade: Facade;
-    private __viewComponent: T;
+    private __view: T;
     private __interests: MVCMap<any>;
     private __logger: (consoleArgs: string[], name: string, action: string) => void;
 
     protected _notificationSubscriptionChange: (notification: string, mediatorName: string, subscribe: boolean) => void;
 
-    constructor(viewComponent?: T) {
+    constructor(view?: T) {
         this.__interests = new MVCMap();
         // tslint:disable-next-line:no-unused-expression
-        viewComponent && this.setViewComponent(viewComponent);
+        view && this.setView(view);
     }
 
     public onRegister(
@@ -78,7 +78,7 @@ export class Mediator<T> {
         this._notificationSubscriptionChange(notification, this.mediatorName, false);
     }
 
-    protected setViewComponent(value: T) {
-        this.__viewComponent = value;
+    protected setView(value: T) {
+        this.__view = value;
     }
 }

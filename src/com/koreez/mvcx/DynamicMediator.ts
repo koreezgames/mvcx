@@ -7,6 +7,6 @@ export class DynamicMediator<T extends IDynamicView> extends Mediator<T> {
     }
 
     protected get mediatorName(): string {
-        return this.viewComponent.uuid;
+        return this.view.uuid;
     }
 }

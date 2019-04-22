@@ -20,14 +20,20 @@ export class View {
     ): void {
         const self = this;
         view.prototype.construct = function() {
-            const mediatorInstance: M = new mediator(this);
-            self.__mediatorsMap.set(this.uuid, mediatorInstance);
-            mediatorInstance.onRegister(self.__facade, self.__onMediatorNotificationSubscriptionChange);
+            // Just wait a frame to be sure mediator is instantiated after the view is constricted
+            setTimeout(() => {
+                const mediatorInstance: M = new mediator(this);
+                self.__mediatorsMap.set(this.uuid, mediatorInstance);
+                mediatorInstance.onRegister(self.__facade, self.__onMediatorNotificationSubscriptionChange);
+            }, 0);
         };
 
         view.prototype.destruct = function() {
-            const mediatorInstance = self.__mediatorsMap.delete(this.uuid);
-            mediatorInstance.onRemove();
+            // Just wait a frame to be sure mediator removed after the view is destroyed
+            setTimeout(() => {
+                const mediatorInstance = self.__mediatorsMap.delete(this.uuid);
+                mediatorInstance.onRemove();
+            }, 0);
         };
     }
 

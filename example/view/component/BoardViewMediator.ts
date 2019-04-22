@@ -14,8 +14,8 @@ export default class BoardViewMediator extends Mediator<BoardView> {
     ) {
         super.onRegister(facade, onMediatorNotificationSubscriptionChange);
 
-        this.setViewComponent(new BoardView());
-        (<any>window).game.world.add(this.viewComponent);
+        this.setView(new BoardView());
+        (<any>window).game.world.add(this.view);
 
         this._subscribe(BoardProxy.DATA_READY, this._onDataReady);
         this._subscribe(BoardProxy.PLAYER_SELECT, this._onPlayerSelect);
@@ -23,15 +23,15 @@ export default class BoardViewMediator extends Mediator<BoardView> {
     }
 
     private _onDataReady(body: any): void {
-        this.viewComponent.init(body);
-        this.viewComponent.show();
+        this.view.init(body);
+        this.view.show();
     }
 
     private _onPlayerSelect(body: any): void {
-        this.viewComponent.selectPlayer(body);
+        this.view.selectPlayer(body);
     }
 
     private _onPlayerDeselect(): void {
-        this.viewComponent.deselectPlayer();
+        this.view.deselectPlayer();
     }
 }

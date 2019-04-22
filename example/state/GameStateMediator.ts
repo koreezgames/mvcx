@@ -11,11 +11,11 @@ export default class GameStateMediator extends Mediator<GameState> {
         super();
 
         // @ts-ignore
-        this.setViewComponent(window.game.state.states[GameState.name] as GameState);
-        this.viewComponent.onLoadStart.add(this._onLoadStart, this);
-        this.viewComponent.onFileLoadComplete.add(this._onFileLoadComplete, this);
-        this.viewComponent.onLoadComplete.add(this._onLoadComplete, this);
-        this.viewComponent.onReady.add(this._onStateReady, this);
+        this.setView(window.game.state.states[GameState.name] as GameState);
+        this.view.onLoadStart.add(this._onLoadStart, this);
+        this.view.onFileLoadComplete.add(this._onFileLoadComplete, this);
+        this.view.onLoadComplete.add(this._onLoadComplete, this);
+        this.view.onReady.add(this._onStateReady, this);
     }
 
     public onRegister(
