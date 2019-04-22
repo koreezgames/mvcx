@@ -84,12 +84,12 @@ describe("mvcx", () => {
                 onMediatorNotificationSubscriptionChange: (notification: string, mediatorName: string, subscribe: boolean) => void
             ) {
                 super.onRegister(facade, onMediatorNotificationSubscriptionChange);
-                this.setViewComponent((window as any).game.world);
+                this.setView((window as any).game.world);
                 this.addHandler();
             }
 
             public onNotification(): void {
-                assert.instanceOf(this.viewComponent, Phaser.World);
+                assert.instanceOf(this.view, Phaser.World);
                 ++this.handledNotifications;
             }
 
@@ -179,7 +179,7 @@ describe("mvcx", () => {
             }
 
             public onNotification(): void {
-                assert.instanceOf(this.viewComponent, TestView);
+                assert.instanceOf(this.view, TestView);
                 ++this.handledNotifications;
             }
 
@@ -202,43 +202,44 @@ describe("mvcx", () => {
             // @ts-ignore
             facade.registerDynamicMediator(TestView, TestMediator);
             const testView = new TestView();
-            // @ts-ignore
-            const testMediator = facade.retrieveMediator(TestMediator) as TestMediator;
-            let handledNotifications = 0;
-            facade.sendNotification("notification");
-            ++handledNotifications;
-            testMediator.removeHandler();
-            facade.sendNotification("notification");
-            facade.sendNotification("notification");
-            facade.sendNotification("notification");
-            testMediator.addHandler();
             setTimeout(() => {
-                facade.sendNotification("notification");
-                ++handledNotifications;
-                facade.sendNotification("notification");
-                ++handledNotifications;
+                const testMediator = facade.retrieveMediator(TestMediator) as TestMediator;
+                let handledNotifications = 0;
                 facade.sendNotification("notification");
                 ++handledNotifications;
                 testMediator.removeHandler();
+                facade.sendNotification("notification");
+                facade.sendNotification("notification");
+                facade.sendNotification("notification");
+                testMediator.addHandler();
                 setTimeout(() => {
                     facade.sendNotification("notification");
+                    ++handledNotifications;
                     facade.sendNotification("notification");
+                    ++handledNotifications;
                     facade.sendNotification("notification");
-                    testMediator.addHandler();
+                    ++handledNotifications;
+                    testMediator.removeHandler();
                     setTimeout(() => {
                         facade.sendNotification("notification");
-                        ++handledNotifications;
-                        facade.sendNotification("notification");
-                        ++handledNotifications;
-                        testView.destruct();
                         facade.sendNotification("notification");
                         facade.sendNotification("notification");
-                        facade.sendNotification("notification");
-                        assert.equal(handledNotifications, testMediator.handledNotifications);
-                        done();
+                        testMediator.addHandler();
+                        setTimeout(() => {
+                            facade.sendNotification("notification");
+                            ++handledNotifications;
+                            facade.sendNotification("notification");
+                            ++handledNotifications;
+                            testView.destruct();
+                            facade.sendNotification("notification");
+                            facade.sendNotification("notification");
+                            facade.sendNotification("notification");
+                            assert.equal(handledNotifications, testMediator.handledNotifications);
+                            done();
+                        }, 200);
                     }, 200);
                 }, 200);
-            }, 200);
+            }, 100);
         }
 
         (window as any).game = new Phaser.Game(800, 600, Phaser.CANVAS, null, config);

@@ -34,7 +34,7 @@ export class Facade {
 
     public registerDynamicMediator<V extends IDynamicView, M extends DynamicMediator<V>>(
         view: new (...args: any[]) => V,
-        mediator: new (viewComponent?: V) => M
+        mediator: new () => M
     ): void {
         return this.__view.registerDynamicMediator(view, mediator);
     }
