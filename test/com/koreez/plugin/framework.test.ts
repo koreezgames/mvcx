@@ -31,17 +31,40 @@ describe("mvcx", () => {
 
         function create() {
             const facade = Facade.Instance;
+            const notificationParam = "param";
             facade.initialize(false);
-            facade.registerCommand("notification", function(name: string) {
+            facade.registerCommand("notification", function(name: string, param) {
                 assert.equal("notification", name);
+                assert.equal(notificationParam, param);
                 assert.instanceOf(this, Facade);
-                this.executeCommand(name, function(subName: string) {
-                    assert.equal("notification", name);
-                    assert.instanceOf(this, Facade);
-                    done();
-                });
+
+                this.executeCommand(
+                    name,
+                    function(subName: string, subParam) {
+                        assert.equal("notification", subName);
+                        assert.equal(notificationParam, subParam);
+                        assert.instanceOf(this, Facade);
+                        this.executeCommandWidthGuard([() => true, () => false], subName, () => assert.fail());
+                        this.executeCommandWidthGuard(
+                            function(guardParam) {
+                                assert.equal(notificationParam, guardParam);
+                                assert.instanceOf(this, Facade);
+                                return true;
+                            },
+                            subName,
+                            function(guardName: string, subGuardParam) {
+                                assert.equal("notification", guardName);
+                                assert.equal(notificationParam, subGuardParam);
+                                assert.instanceOf(this, Facade);
+                                this.executeCommandWidthGuard([() => true, () => true], subName, () => done());
+                            },
+                            subParam
+                        );
+                    },
+                    param
+                );
             });
-            facade.sendNotification("notification");
+            facade.sendNotification("notification", notificationParam);
         }
 
         (window as any).game = new Phaser.Game(800, 600, Phaser.CANVAS, null, config);

@@ -1,4 +1,4 @@
-import { Controller, ICommand } from "./Controller";
+import { Controller, ICommand, IGuard } from "./Controller";
 import { DynamicMediator } from "./DynamicMediator";
 import { Mediator } from "./Mediator";
 import { Model } from "./Model";
@@ -44,15 +44,15 @@ export class Facade {
     }
 
     public removeMediator<V, M extends Mediator<V>>(mediator: new (viewComponent?: V) => M): void {
-        return this.__view.removeMediator(mediator);
+        this.__view.removeMediator(mediator);
     }
 
     public sleepMediator<V, M extends Mediator<V>>(mediator: new (viewComponent?: V) => M): void {
-        return this.__view.sleepMediator(mediator);
+        this.__view.sleepMediator(mediator);
     }
 
     public wakeMediator<V, M extends Mediator<V>>(mediator: new (viewComponent?: V) => M): void {
-        return this.__view.wakeMediator(mediator);
+        this.__view.wakeMediator(mediator);
     }
 
     public retrieveMediator<V, M extends Mediator<V>>(mediator: new (viewComponent?: V) => M): Mediator<V> {
@@ -68,7 +68,7 @@ export class Facade {
     }
 
     public removeProxy<D, P extends Proxy<D>>(proxy: new () => P): void {
-        return this.__model.removeProxy(proxy);
+        this.__model.removeProxy(proxy);
     }
 
     public retrieveProxy<D, P extends Proxy<D>>(proxy: new () => P): P {
@@ -80,14 +80,24 @@ export class Facade {
     }
     //
     public registerCommand(notificationName: string, command: ICommand): void {
-        return this.__controller.registerCommand(notificationName, command);
+        this.__controller.registerCommand(notificationName, command);
     }
     public removeCommand(notificationName: string): void {
-        return this.__controller.removeCommand(notificationName);
+        this.__controller.removeCommand(notificationName);
     }
 
     public executeCommand(notificationName: string, command: ICommand, ...args: any[]): void {
-        return this.__controller.executeCommand(notificationName, command, ...args);
+        this.__controller.executeCommand(notificationName, command, ...args);
+    }
+
+    public executeCommandWidthGuard(guard: IGuard | IGuard[], notificationName: string, command: ICommand, ...args: any[]): void {
+        const guards = Array.isArray(guard) ? guard : [guard];
+        const passed = guards.reduce((previousValue: boolean, currentGuard: IGuard) => {
+            return previousValue && currentGuard.call(this, ...args);
+        }, true);
+        if (passed) {
+            this.executeCommand(notificationName, command, ...args);
+        }
     }
     //
     public initialize(debug: boolean) {

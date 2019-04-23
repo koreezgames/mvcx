@@ -40,3 +40,5 @@ export class Controller {
 }
 
 export type ICommand = (notification: string, ...args: any[]) => void;
+
+export type IGuard = (...args: any[]) => boolean;
