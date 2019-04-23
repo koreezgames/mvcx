@@ -16,18 +16,13 @@ export class View {
 
     public registerDynamicMediator<V extends IDynamicView, M extends DynamicMediator<V>>(
         view: new (...args: any[]) => V,
-        mediator: new () => M
+        mediator: new (view?: V) => M
     ): void {
         const self = this;
         view.prototype.construct = function() {
-            // Just wait a frame to be sure mediator is instantiated after the view is constricted
-            setTimeout(() => {
-                const mediatorInstance: M = new mediator();
-                self.__mediatorsMap.set(this.uuid, mediatorInstance);
-                // @ts-ignore
-                mediatorInstance.setView(this);
-                mediatorInstance.onRegister(self.__facade, self.__onMediatorNotificationSubscriptionChange);
-            }, 0);
+            const mediatorInstance: M = new mediator(this);
+            self.__mediatorsMap.set(this.uuid, mediatorInstance);
+            mediatorInstance.onRegister(self.__facade, self.__onMediatorNotificationSubscriptionChange);
         };
 
         view.prototype.destruct = function() {

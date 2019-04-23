@@ -11,7 +11,7 @@ export class Model {
         this.__proxiesMap = new MVCMap();
     }
 
-    public registerProxy<T>(proxy: new () => Proxy<T>): Proxy<T> {
+    public registerProxy<D, P extends Proxy<D>>(proxy: new () => P): P {
         const proxyInstance = new proxy();
         const name = proxyInstance.constructor.name;
         this.__proxiesMap.set(name, proxyInstance);
@@ -19,7 +19,7 @@ export class Model {
         return proxyInstance;
     }
 
-    public removeProxy<T>(proxy: new () => Proxy<T>): void {
+    public removeProxy<D, P extends Proxy<D>>(proxy: new () => P): void {
         if (!this.hasProxy(proxy)) {
             return;
         }
@@ -31,13 +31,13 @@ export class Model {
         proxyInstance.onRemove();
     }
 
-    public hasProxy<T>(proxy: new () => Proxy<T>): boolean {
+    public hasProxy<D, P extends Proxy<D>>(proxy: new () => P): boolean {
         const key = proxy.name;
         return this.__proxiesMap.has(key);
     }
 
-    public retrieveProxy<T>(proxy: new () => Proxy<T>): Proxy<T> {
+    public retrieveProxy<D, P extends Proxy<D>>(proxy: new () => P): P {
         const key = proxy.name;
-        return this.__proxiesMap.get(key);
+        return this.__proxiesMap.get(key) as P;
     }
 }

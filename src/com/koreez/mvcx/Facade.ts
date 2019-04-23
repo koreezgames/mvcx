@@ -63,19 +63,19 @@ export class Facade {
         return this.__view.hasMediator(mediator);
     }
     //
-    public registerProxy<T>(proxy: new () => Proxy<T>): Proxy<T> {
+    public registerProxy<D, P extends Proxy<D>>(proxy: new () => P): P {
         return this.__model.registerProxy(proxy);
     }
 
-    public removeProxy<T>(proxy: new () => Proxy<T>): void {
+    public removeProxy<D, P extends Proxy<D>>(proxy: new () => P): void {
         return this.__model.removeProxy(proxy);
     }
 
-    public retrieveProxy<T>(proxy: new () => Proxy<T>): Proxy<T> {
+    public retrieveProxy<D, P extends Proxy<D>>(proxy: new () => P): P {
         return this.__model.retrieveProxy(proxy);
     }
 
-    public hasProxy<T>(proxy: new () => Proxy<T>): boolean {
+    public hasProxy<D, P extends Proxy<D>>(proxy: new () => P): boolean {
         return this.__model.hasProxy(proxy);
     }
     //
