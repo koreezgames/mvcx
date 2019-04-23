@@ -90,7 +90,7 @@ export class Facade {
         this.__controller.executeCommand(notificationName, command, ...args);
     }
 
-    public executeCommandWidthGuard(guard: IGuard | IGuard[], notificationName: string, command: ICommand, ...args: any[]): void {
+    public executeCommandWithGuard(guard: IGuard | IGuard[], notificationName: string, command: ICommand, ...args: any[]): void {
         const guards = Array.isArray(guard) ? guard : [guard];
         const passed = guards.reduce((previousValue: boolean, currentGuard: IGuard) => {
             return previousValue && currentGuard.call(this, ...args);

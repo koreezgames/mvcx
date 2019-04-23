@@ -44,8 +44,8 @@ describe("mvcx", () => {
                         assert.equal("notification", subName);
                         assert.equal(notificationParam, subParam);
                         assert.instanceOf(this, Facade);
-                        this.executeCommandWidthGuard([() => true, () => false], subName, () => assert.fail());
-                        this.executeCommandWidthGuard(
+                        this.executeCommandWithGuard([() => true, () => false], subName, () => assert.fail());
+                        this.executeCommandWithGuard(
                             function(guardParam) {
                                 assert.equal(notificationParam, guardParam);
                                 assert.instanceOf(this, Facade);
@@ -56,7 +56,7 @@ describe("mvcx", () => {
                                 assert.equal("notification", guardName);
                                 assert.equal(notificationParam, subGuardParam);
                                 assert.instanceOf(this, Facade);
-                                this.executeCommandWidthGuard([() => true, () => true], subName, () => done());
+                                this.executeCommandWithGuard([() => true, () => true], subName, () => done());
                             },
                             subParam
                         );
