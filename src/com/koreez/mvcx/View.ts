@@ -16,7 +16,7 @@ export class View {
 
     public registerDynamicMediator<V extends IDynamicView, M extends DynamicMediator<V>>(
         view: new (...args: any[]) => V,
-        mediator: new (view?: V) => M
+        mediator: new (view: V) => M
     ): void {
         const self = this;
         view.prototype.construct = function() {
