@@ -1,17 +1,11 @@
 import { DynamicMediator } from "./DynamicMediator";
 import { Facade } from "./Facade";
 import { Mediator } from "./Mediator";
-import { MVCMap } from "./utils";
+import { Observer } from "./Observer";
 
-export class View {
-    private __facade: Facade;
-    private __mediatorsMap: MVCMap<Mediator<any>>;
-    private __eventsMap: MVCMap<string[]>;
-
+export class View extends Observer {
     constructor(facade: Facade) {
-        this.__facade = facade;
-        this.__mediatorsMap = new MVCMap();
-        this.__eventsMap = new MVCMap();
+        super(facade);
     }
 
     public registerDynamicMediator<V extends IDynamicView, M extends DynamicMediator<V>>(
@@ -21,34 +15,22 @@ export class View {
         const self = this;
         view.prototype.construct = function() {
             const mediatorInstance: M = new mediator(this);
-            self.__mediatorsMap.set(this.uuid, mediatorInstance);
-            mediatorInstance.onRegister(self.__facade, self.__onMediatorNotificationSubscriptionChange);
+            self._observantsMap.set(this.uuid, mediatorInstance);
+            mediatorInstance.onRegister(self._facade, self._onSubscriptionChange);
         };
 
         view.prototype.destruct = function() {
-            const mediatorInstance = self.__mediatorsMap.delete(this.uuid);
+            const mediatorInstance = self._observantsMap.delete(this.uuid);
             mediatorInstance.onRemove();
         };
     }
 
-    public registerMediator<V, M extends Mediator<V>>(mediator: new (viewComponent?: V) => M): Mediator<V> {
-        const mediatorInstance = new mediator();
-        const name = mediatorInstance.constructor.name;
-        this.__mediatorsMap.set(name, mediatorInstance);
-        mediatorInstance.onRegister(this.__facade, this.__onMediatorNotificationSubscriptionChange);
-        return mediatorInstance;
+    public registerMediator<V, M extends Mediator<V>>(mediator: new (viewComponent?: V) => M): void {
+        super.registerObservant(mediator);
     }
 
     public removeMediator<V, M extends Mediator<V>>(mediator: new (viewComponent?: V) => M): void {
-        if (!this.hasMediator(mediator)) {
-            return;
-        }
-
-        const key = mediator.name;
-        let mediatorInstance = this.__mediatorsMap.get(key);
-
-        this.__mediatorsMap.delete(key);
-        mediatorInstance.onRemove();
+        super.removeObservant(mediator);
     }
 
     public sleepMediator<V, M extends Mediator<V>>(mediator: new (viewComponent?: V) => M): void {
@@ -57,7 +39,7 @@ export class View {
         }
 
         const key = mediator.name;
-        let mediatorInstance = this.__mediatorsMap.get(key);
+        let mediatorInstance = this._observantsMap.get(key) as M;
         mediatorInstance.onSleep();
     }
 
@@ -67,63 +49,16 @@ export class View {
         }
 
         const key = mediator.name;
-        let mediatorInstance = this.__mediatorsMap.get(key);
+        let mediatorInstance = this._observantsMap.get(key) as M;
         mediatorInstance.onWake();
     }
 
     public retrieveMediator<V, M extends Mediator<V>>(mediator: new (viewComponent?: V) => M): Mediator<V> {
-        return this.__mediatorsMap.get(mediator.name);
+        return super.retrieveObservant(mediator);
     }
 
     public hasMediator<V, M extends Mediator<V>>(mediator: new (viewComponent?: V) => M): boolean {
-        return this.__mediatorsMap.has(mediator.name);
-    }
-
-    public handleNotification(notification: string, ...args: any[]): void {
-        if (this.__hasEvent(notification)) {
-            const names = this.__eventsMap.get(notification);
-            names.forEach((name: string) => {
-                const mediator = this.__mediatorsMap.get(name);
-                mediator.onNotification(notification, ...args);
-            });
-        }
-    }
-
-    public subscribe(notification: string, mediatorName: string): void {
-        if (!this.__hasEvent(notification)) {
-            this.__eventsMap.set(notification, [mediatorName]);
-        } else {
-            const names = this.__eventsMap.get(notification);
-            const existing = names.indexOf(mediatorName);
-            if (existing !== -1) {
-                names[existing] = mediatorName;
-            } else {
-                names.push(mediatorName);
-            }
-        }
-    }
-
-    public unsubscribe(notification: string, mediatorName: string): void {
-        if (!this.__hasEvent(notification)) {
-            return;
-        }
-
-        const names = this.__eventsMap.get(notification);
-        const existing = names.indexOf(mediatorName);
-        if (existing !== -1) {
-            names.splice(existing, 1);
-            if (!names.length) {
-                this.__eventsMap.delete(notification);
-            }
-        }
-    }
-
-    private __onMediatorNotificationSubscriptionChange = (notification: string, mediatorName: string, subscribe: boolean) => {
-        subscribe ? this.subscribe(notification, mediatorName) : this.unsubscribe(notification, mediatorName);
-    };
-
-    private __hasEvent(key: string): boolean {
-        return this.__eventsMap.has(key);
+        return super.hasObservant(mediator);
     }
 }
 

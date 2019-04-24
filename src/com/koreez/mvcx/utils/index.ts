@@ -8,7 +8,7 @@ export function logNotification(consoleArgs: string[], notificationName: string)
     console.log.apply(console, consoleArgs);
 }
 
-export function logMediator(consoleArgs: string[], name: string, action: string): void {
+export function logObservant(consoleArgs: string[], name: string, action: string): void {
     consoleArgs[0] = `%c %c %c ${name}: ${action} %c %c `;
     console.log.apply(console, consoleArgs);
 }

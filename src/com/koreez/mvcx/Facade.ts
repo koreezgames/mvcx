@@ -2,6 +2,8 @@ import { Controller, ICommand, IGuard } from "./Controller";
 import { DynamicMediator } from "./DynamicMediator";
 import { Mediator } from "./Mediator";
 import { Model } from "./Model";
+import { Observant } from "./Observant";
+import { Observer } from "./Observer";
 import { Proxy } from "./Proxy";
 import { logNone, logNotification } from "./utils";
 import { IDynamicView, View } from "./View";
@@ -19,6 +21,7 @@ export class Facade {
     private __controller: Controller;
     private __model: Model;
     private __view: View;
+    private __observer: Observer;
     private __debug: boolean;
     private __logger: (consoleArgs: string[], notificationName: string) => void;
 
@@ -29,6 +32,7 @@ export class Facade {
     public sendNotification(notification: string, ...args: any[]) {
         this.__logger(Facade._consoleArgs, notification);
         this.__controller.executeCommand(notification, undefined, ...args);
+        this.__observer.handleNotification(notification, ...args);
         this.__view.handleNotification(notification, ...args);
     }
 
@@ -39,8 +43,8 @@ export class Facade {
         return this.__view.registerDynamicMediator(view, mediator);
     }
 
-    public registerMediator<V, M extends Mediator<V>>(mediator: new (viewComponent?: V) => M): Mediator<V> {
-        return this.__view.registerMediator(mediator);
+    public registerMediator<V, M extends Mediator<V>>(mediator: new (viewComponent?: V) => M): void {
+        this.__view.registerMediator(mediator);
     }
 
     public removeMediator<V, M extends Mediator<V>>(mediator: new (viewComponent?: V) => M): void {
@@ -82,12 +86,29 @@ export class Facade {
     public registerCommand(notificationName: string, command: ICommand): void {
         this.__controller.registerCommand(notificationName, command);
     }
+
     public removeCommand(notificationName: string): void {
         this.__controller.removeCommand(notificationName);
     }
 
     public executeCommand(notificationName: string, command: ICommand, ...args: any[]): void {
         this.__controller.executeCommand(notificationName, command, ...args);
+    }
+    //
+    public registerObservant<O extends Observant>(observant: new () => O): void {
+        this.__observer.registerObservant(observant);
+    }
+
+    public removeObservant<O extends Observant>(observant: new () => O): void {
+        this.__observer.removeObservant(observant);
+    }
+
+    public retrieveObservant<O extends Observant>(mediator: new () => O): O {
+        return this.__observer.retrieveObservant(mediator);
+    }
+
+    public hasObservant<O extends Observant>(mediator: new () => O): boolean {
+        return this.__observer.hasObservant(mediator);
     }
 
     public executeCommandWithGuard(guard: IGuard | IGuard[], notificationName: string, command: ICommand, ...args: any[]): void {
@@ -105,16 +126,24 @@ export class Facade {
         this.__logger = this.__debug ? logNotification : logNone;
         this.initializeController();
         this.initializeModel();
+        this.initializeObserver();
         this.initializeView();
     }
+
     protected initializeModel() {
         this.__model = new Model(this);
     }
+
     protected initializeController() {
         this.__controller = new Controller(this);
     }
+
     protected initializeView() {
         this.__view = new View(this);
+    }
+
+    protected initializeObserver() {
+        this.__observer = new Observer(this);
     }
 
     public get debug(): boolean {

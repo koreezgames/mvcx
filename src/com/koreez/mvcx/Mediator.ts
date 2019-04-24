@@ -1,81 +1,44 @@
 import { Facade } from "./Facade";
-import { logMediator, logNone, MVCMap } from "./utils";
+import { Observant } from "./Observant";
 
-export class Mediator<T> {
-    protected get mediatorName(): string {
-        return this.constructor.name;
-    }
-
+export class Mediator<T> extends Observant {
     public get view(): T {
         return this.__view;
     }
 
     protected get facade(): Facade {
-        return this.__facade;
+        return this._facade;
     }
 
-    private static readonly _consoleArgs: string[] = [
-        "",
-        `background: ${"#2A3351"}`,
-        `background: ${"#364D98"}`,
-        `color: ${"#F4F6FE"}; background: ${"#3656C1"};`,
-        `background: ${"#364D98"}`,
-        `background: ${"#2A3351"}`
-    ];
-
-    private __facade: Facade;
     private __view: T;
-    private __interests: MVCMap<any>;
-    private __logger: (consoleArgs: string[], name: string, action: string) => void;
-
-    protected _notificationSubscriptionChange: (notification: string, mediatorName: string, subscribe: boolean) => void;
 
     constructor(view?: T) {
-        this.__interests = new MVCMap();
+        super();
         // tslint:disable-next-line:no-unused-expression
         view && this.setView(view);
     }
 
     public onRegister(
         facade: Facade,
-        onMediatorNotificationSubscriptionChange: (notification: string, mediatorName: string, subscribe: boolean) => void
+        onSubscriptionChange: (notification: string, mediatorName: string, subscribe: boolean) => void
     ): void {
-        this.__facade = facade;
-        this.__logger = this.__facade.debug ? logMediator : logNone;
-        this._notificationSubscriptionChange = onMediatorNotificationSubscriptionChange;
-        this.__logger(Mediator._consoleArgs, this.mediatorName, "register");
+        super.onRegister(facade, onSubscriptionChange);
         this.onWake();
     }
 
     public onRemove(): void {
         this.onSleep();
-        this._notificationSubscriptionChange = null;
-        this.__logger(Mediator._consoleArgs, this.mediatorName, "remove");
+        super.onRemove();
     }
 
     public onSleep(): void {
-        this.__interests.forEach((notification: string) => this._unsubscribe(notification));
-        this.__logger(Mediator._consoleArgs, this.mediatorName, "sleep");
+        this._interests.forEach((notification: string) => this._unsubscribe(notification));
+        this._logger(Observant._consoleArgs, this.observantName, "sleep");
     }
 
     public onWake(): void {
-        this.__interests.forEach((notification: string, callback: any) => this._subscribe(notification, callback));
-        this.__logger(Mediator._consoleArgs, this.mediatorName, "wake");
-    }
-
-    public onNotification(notification: string, ...args: any[]): void {
-        const callback = this.__interests.get(notification);
-        callback.call(this, ...args);
-    }
-
-    protected _subscribe(notification: string, callback: any): void {
-        this.__interests.set(notification, callback);
-        this._notificationSubscriptionChange(notification, this.mediatorName, true);
-    }
-
-    protected _unsubscribe(notification: string): void {
-        this.__interests.delete(notification);
-        this._notificationSubscriptionChange(notification, this.mediatorName, false);
+        this._interests.forEach((notification: string, callback: any) => this._subscribe(notification, callback));
+        this._logger(Observant._consoleArgs, this.observantName, "wake");
     }
 
     protected setView(value: T) {

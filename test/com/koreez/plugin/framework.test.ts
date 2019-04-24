@@ -6,7 +6,7 @@
 // ------------------------------------------------------------------------------
 
 import { assert } from "chai";
-import { DynamicMediator, Facade, IDynamicView, Mediator, Proxy } from "../../../../src";
+import { DynamicMediator, Facade, IDynamicView, Mediator, Observant, Proxy } from "../../../../src";
 import "../../../entry";
 
 describe("mvcx", () => {
@@ -93,6 +93,78 @@ describe("mvcx", () => {
                 done();
             });
             facade.sendNotification("notification");
+        }
+
+        (window as any).game = new Phaser.Game(800, 600, Phaser.CANVAS, null, config);
+    });
+
+    it("Observant", done => {
+        class TestObservant extends Observant {
+            public handledNotifications: number = 0;
+
+            public onRegister(
+                facade: Facade,
+                onSubscriptionChange: (notification: string, mediatorName: string, subscribe: boolean) => void
+            ) {
+                super.onRegister(facade, onSubscriptionChange);
+                this.addHandler();
+            }
+
+            public onNotification(): void {
+                ++this.handledNotifications;
+            }
+
+            public removeHandler(): void {
+                this._unsubscribe("notification");
+            }
+
+            public addHandler(): void {
+                this._subscribe("notification", this.onNotification);
+            }
+        }
+
+        const config = {
+            create
+        };
+
+        function create() {
+            const facade = Facade.Instance;
+            facade.initialize(false);
+            // @ts-ignore
+            facade.registerObservant(TestObservant);
+            // @ts-ignore
+            const testObservant = facade.retrieveObservant(TestObservant) as TestObservant;
+            let handledNotifications = 0;
+            facade.sendNotification("notification");
+            ++handledNotifications;
+            testObservant.removeHandler();
+            facade.sendNotification("notification");
+            facade.sendNotification("notification");
+            facade.sendNotification("notification");
+            testObservant.addHandler();
+            setTimeout(() => {
+                facade.sendNotification("notification");
+                ++handledNotifications;
+                facade.sendNotification("notification");
+                ++handledNotifications;
+                facade.sendNotification("notification");
+                ++handledNotifications;
+                testObservant.removeHandler();
+                setTimeout(() => {
+                    facade.sendNotification("notification");
+                    facade.sendNotification("notification");
+                    facade.sendNotification("notification");
+                    testObservant.addHandler();
+                    setTimeout(() => {
+                        facade.sendNotification("notification");
+                        ++handledNotifications;
+                        facade.sendNotification("notification");
+                        ++handledNotifications;
+                        assert.equal(handledNotifications, testObservant.handledNotifications);
+                        done();
+                    }, 200);
+                }, 200);
+            }, 200);
         }
 
         (window as any).game = new Phaser.Game(800, 600, Phaser.CANVAS, null, config);
