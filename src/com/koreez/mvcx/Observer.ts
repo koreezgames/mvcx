@@ -16,22 +16,23 @@ export class Observer {
     }
 
     public registerObservant<O extends Observant>(observant: new () => O): void {
+        if (this.hasObservant(observant) || this.hasSleptObservant(observant)) {
+            return;
+        }
+        const name = observant.name;
         const observantInstance = new observant();
-        const name = observantInstance.observantName;
         this._observantsMap.set(name, observantInstance);
         observantInstance.onRegister(this._facade, this._onSubscriptionChange);
     }
 
     public removeObservant<O extends Observant>(observant: new () => O): void {
-        if (!this.hasObservant(observant)) {
+        if (this.hasObservant(observant)) {
+            Observer.__removeObservant(this._observantsMap, observant);
             return;
         }
-
-        const key = observant.name;
-        let observantInstance = this._observantsMap.get(key);
-
-        this._observantsMap.delete(key);
-        observantInstance.onRemove();
+        if (this.hasSleptObservant(observant)) {
+            Observer.__removeObservant(this._sleptObservantsMap, observant);
+        }
     }
 
     public retrieveObservant<O extends Observant>(observant: new () => O): O {
@@ -71,7 +72,7 @@ export class Observer {
     }
 
     public handleNotification(notification: string, ...args: any[]): void {
-        if (this._hasNotification(notification)) {
+        if (this.__hasNotification(notification)) {
             const observantNames = this._notificationToObservantsMap.get(notification);
             observantNames.forEach((observantName: string) => {
                 const observant = this._observantsMap.get(observantName);
@@ -81,11 +82,11 @@ export class Observer {
     }
 
     protected _onSubscriptionChange = (notification: string, observantName: string, subscribe: boolean) => {
-        subscribe ? this.subscribe(notification, observantName) : this.unsubscribe(notification, observantName);
+        subscribe ? this.__subscribe(notification, observantName) : this.__unsubscribe(notification, observantName);
     };
 
-    private subscribe(notification: string, observantName: string): void {
-        if (!this._hasNotification(notification)) {
+    private __subscribe(notification: string, observantName: string): void {
+        if (!this.__hasNotification(notification)) {
             this._notificationToObservantsMap.set(notification, [observantName]);
         } else {
             const names = this._notificationToObservantsMap.get(notification);
@@ -98,8 +99,8 @@ export class Observer {
         }
     }
 
-    private unsubscribe(notification: string, observantName: string): void {
-        if (!this._hasNotification(notification)) {
+    private __unsubscribe(notification: string, observantName: string): void {
+        if (!this.__hasNotification(notification)) {
             return;
         }
 
@@ -113,7 +114,14 @@ export class Observer {
         }
     }
 
-    private _hasNotification(key: string): boolean {
+    private __hasNotification(key: string): boolean {
         return this._notificationToObservantsMap.has(key);
+    }
+
+    private static __removeObservant<O extends Observant>(map: MVCMap<Observant>, observant: new () => O): void {
+        const key = observant.name;
+        let observantInstance = map.get(key);
+        map.delete(key);
+        observantInstance.onRemove();
     }
 }
