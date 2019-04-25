@@ -34,23 +34,11 @@ export class View extends Observer {
     }
 
     public sleepMediator<V, M extends Mediator<V>>(mediator: new (viewComponent?: V) => M): void {
-        if (!this.hasMediator(mediator)) {
-            return;
-        }
-
-        const key = mediator.name;
-        let mediatorInstance = this._observantsMap.get(key) as M;
-        mediatorInstance.onSleep();
+        super.sleepObservant(mediator);
     }
 
     public wakeMediator<V, M extends Mediator<V>>(mediator: new (viewComponent?: V) => M): void {
-        if (!this.hasMediator(mediator)) {
-            return;
-        }
-
-        const key = mediator.name;
-        let mediatorInstance = this._observantsMap.get(key) as M;
-        mediatorInstance.onWake();
+        super.wakeObservant(mediator);
     }
 
     public retrieveMediator<V, M extends Mediator<V>>(mediator: new (viewComponent?: V) => M): Mediator<V> {

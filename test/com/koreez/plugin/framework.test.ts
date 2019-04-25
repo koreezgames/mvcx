@@ -110,7 +110,7 @@ describe("mvcx", () => {
                 this.addHandler();
             }
 
-            public onNotification(): void {
+            public onCustomNotification(): void {
                 ++this.handledNotifications;
             }
 
@@ -119,7 +119,7 @@ describe("mvcx", () => {
             }
 
             public addHandler(): void {
-                this._subscribe("notification", this.onNotification);
+                this._subscribe("notification", this.onCustomNotification);
             }
         }
 
@@ -149,12 +149,12 @@ describe("mvcx", () => {
                 ++handledNotifications;
                 facade.sendNotification("notification");
                 ++handledNotifications;
-                testObservant.removeHandler();
+                facade.sleepObservant(TestObservant);
                 setTimeout(() => {
                     facade.sendNotification("notification");
                     facade.sendNotification("notification");
                     facade.sendNotification("notification");
-                    testObservant.addHandler();
+                    facade.wakeObservant(TestObservant);
                     setTimeout(() => {
                         facade.sendNotification("notification");
                         ++handledNotifications;

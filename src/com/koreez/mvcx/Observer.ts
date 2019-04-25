@@ -6,11 +6,13 @@ export class Observer {
     protected _facade: Facade;
     protected _notificationToObservantsMap: MVCMap<string[]>;
     protected _observantsMap: MVCMap<Observant>;
+    protected _sleptObservantsMap: MVCMap<Observant>;
 
     constructor(facade: Facade) {
         this._facade = facade;
         this._notificationToObservantsMap = new MVCMap();
         this._observantsMap = new MVCMap();
+        this._sleptObservantsMap = new MVCMap();
     }
 
     public registerObservant<O extends Observant>(observant: new () => O): void {
@@ -32,12 +34,40 @@ export class Observer {
         observantInstance.onRemove();
     }
 
-    public retrieveObservant<O extends Observant>(mediator: new () => O): O {
-        return this._observantsMap.get(mediator.name) as O;
+    public retrieveObservant<O extends Observant>(observant: new () => O): O {
+        return this._observantsMap.get(observant.name) as O;
     }
 
     public hasObservant<O extends Observant>(observant: new () => O): boolean {
         return this._observantsMap.has(observant.name);
+    }
+
+    public hasSleptObservant<O extends Observant>(observant: new () => O): boolean {
+        return this._sleptObservantsMap.has(observant.name);
+    }
+
+    public sleepObservant<O extends Observant>(observant: new () => O): void {
+        if (!this.hasObservant(observant)) {
+            return;
+        }
+
+        const key = observant.name;
+        let observantInstance = this._observantsMap.get(key);
+        this._sleptObservantsMap.set(key, observantInstance);
+        this._observantsMap.delete(key);
+        observantInstance.onSleep();
+    }
+
+    public wakeObservant<O extends Observant>(observant: new () => O): void {
+        if (!this.hasSleptObservant(observant)) {
+            return;
+        }
+
+        const key = observant.name;
+        let observantInstance = this._sleptObservantsMap.get(key);
+        this._observantsMap.set(key, observantInstance);
+        this._sleptObservantsMap.delete(key);
+        observantInstance.onWake();
     }
 
     public handleNotification(notification: string, ...args: any[]): void {
@@ -50,7 +80,11 @@ export class Observer {
         }
     }
 
-    public subscribe(notification: string, observantName: string): void {
+    protected _onSubscriptionChange = (notification: string, observantName: string, subscribe: boolean) => {
+        subscribe ? this.subscribe(notification, observantName) : this.unsubscribe(notification, observantName);
+    };
+
+    private subscribe(notification: string, observantName: string): void {
         if (!this._hasNotification(notification)) {
             this._notificationToObservantsMap.set(notification, [observantName]);
         } else {
@@ -64,7 +98,7 @@ export class Observer {
         }
     }
 
-    public unsubscribe(notification: string, observantName: string): void {
+    private unsubscribe(notification: string, observantName: string): void {
         if (!this._hasNotification(notification)) {
             return;
         }
@@ -78,10 +112,6 @@ export class Observer {
             }
         }
     }
-
-    protected _onSubscriptionChange = (notification: string, observantName: string, subscribe: boolean) => {
-        subscribe ? this.subscribe(notification, observantName) : this.unsubscribe(notification, observantName);
-    };
 
     private _hasNotification(key: string): boolean {
         return this._notificationToObservantsMap.has(key);

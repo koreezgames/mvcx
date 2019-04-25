@@ -103,6 +103,14 @@ export class Facade {
         this.__observer.removeObservant(observant);
     }
 
+    public sleepObservant<O extends Observant>(observant: new () => O): void {
+        this.__observer.sleepObservant(observant);
+    }
+
+    public wakeObservant<O extends Observant>(observant: new () => O): void {
+        this.__observer.wakeObservant(observant);
+    }
+
     public retrieveObservant<O extends Observant>(mediator: new () => O): O {
         return this.__observer.retrieveObservant(mediator);
     }
