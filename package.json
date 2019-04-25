@@ -1,6 +1,6 @@
 {
     "name": "@koreez/mvcx",
-    "version": "1.0.0-alpha.10",
+    "version": "1.0.0-alpha.11",
     "description": "mvcx",
     "main": "lib/index.js",
     "typings": "lib/index.d.ts",
