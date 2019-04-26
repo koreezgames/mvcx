@@ -79,12 +79,9 @@ describe("mvcx", () => {
             }
         }
 
-        const config = {
-            create
-        };
-
         function create() {
             const facade = Facade.Instance;
+            facade.initialize(false);
             facade.registerProxy(TestProxy);
             facade.registerCommand("notification", () => {
                 const testProxy = facade.retrieveProxy(TestProxy);
@@ -92,8 +89,14 @@ describe("mvcx", () => {
                 assert.instanceOf(testProxy.vo, TestData);
                 done();
             });
-            facade.sendNotification("notification");
+            setTimeout(() => {
+                facade.sendNotification("notification");
+            });
         }
+
+        const config = {
+            create
+        };
 
         (window as any).game = new Phaser.Game(800, 600, Phaser.CANVAS, null, config);
     });
@@ -102,11 +105,8 @@ describe("mvcx", () => {
         class TestObservant extends Observant {
             public handledNotifications: number = 0;
 
-            public onRegister(
-                facade: Facade,
-                onSubscriptionChange: (notification: string, mediatorName: string, subscribe: boolean) => void
-            ) {
-                super.onRegister(facade, onSubscriptionChange);
+            public onRegister(facade: Facade) {
+                super.onRegister(facade);
                 this.addHandler();
             }
 
@@ -174,16 +174,13 @@ describe("mvcx", () => {
         class TestMediator extends Mediator<Phaser.World> {
             public handledNotifications: number = 0;
 
-            public onRegister(
-                facade: Facade,
-                onMediatorNotificationSubscriptionChange: (notification: string, mediatorName: string, subscribe: boolean) => void
-            ) {
-                super.onRegister(facade, onMediatorNotificationSubscriptionChange);
+            public onRegister(facade: Facade) {
+                super.onRegister(facade);
                 this.setView((window as any).game.world);
                 this.addHandler();
             }
 
-            public onNotification(): void {
+            public onNotificationCallback(): void {
                 assert.instanceOf(this.view, Phaser.World);
                 ++this.handledNotifications;
             }
@@ -193,7 +190,7 @@ describe("mvcx", () => {
             }
 
             public addHandler(): void {
-                this._subscribe("notification", this.onNotification);
+                this._subscribe("notification", this.onNotificationCallback);
             }
         }
 
@@ -265,15 +262,12 @@ describe("mvcx", () => {
         class TestMediator extends DynamicMediator<TestView> {
             public handledNotifications: number = 0;
 
-            public onRegister(
-                facade: Facade,
-                onMediatorNotificationSubscriptionChange: (notification: string, mediatorName: string, subscribe: boolean) => void
-            ) {
-                super.onRegister(facade, onMediatorNotificationSubscriptionChange);
+            public onRegister(facade: Facade) {
+                super.onRegister(facade);
                 this.addHandler();
             }
 
-            public onNotification(): void {
+            public onNotificationCallback(): void {
                 assert.instanceOf(this.view, TestView);
                 ++this.handledNotifications;
             }
@@ -283,7 +277,7 @@ describe("mvcx", () => {
             }
 
             public addHandler(): void {
-                this._subscribe("notification", this.onNotification);
+                this._subscribe("notification", this.onNotificationCallback);
             }
         }
 
@@ -298,7 +292,7 @@ describe("mvcx", () => {
             facade.registerDynamicMediator(TestView, TestMediator);
             const testView = new TestView();
             setTimeout(() => {
-                const testMediator = facade.retrieveMediator(TestMediator) as TestMediator;
+                const testMediator = facade.retrieveDynamicMediator(testView) as TestMediator;
                 let handledNotifications = 0;
                 facade.sendNotification("notification");
                 ++handledNotifications;

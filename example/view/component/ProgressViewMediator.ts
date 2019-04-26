@@ -6,11 +6,8 @@ import GameState from "../../state/GameState";
 import ProgressView from "./ProgressView";
 
 export default class ProgressViewMediator extends Mediator<ProgressView> {
-    public onRegister(
-        facade: Facade,
-        onMediatorNotificationSubscriptionChange: (notification: string, mediatorName: string, subscribe: boolean) => void
-    ) {
-        super.onRegister(facade, onMediatorNotificationSubscriptionChange);
+    public onRegister(facade: Facade) {
+        super.onRegister(facade);
         this._subscribe(GameState.LOAD_START, this._onLoadStart);
         this._subscribe(GameState.FILE_LOAD_COMPLETE, this._onFileLoadComplete);
         this._subscribe(GameState.LOAD_COMPLETE, this._onLoadComplete);

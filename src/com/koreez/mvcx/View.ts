@@ -1,11 +1,16 @@
 import { DynamicMediator } from "./DynamicMediator";
 import { Facade } from "./Facade";
 import { Mediator } from "./Mediator";
+import { Observant } from "./Observant";
 import { Observer } from "./Observer";
+import { MVCMap } from "./utils";
 
 export class View extends Observer {
+    private __dynamicMediatorsMap: MVCMap<string, Observant>;
+
     constructor(facade: Facade) {
         super(facade);
+        this.__dynamicMediatorsMap = new MVCMap();
     }
 
     public registerDynamicMediator<V extends IDynamicView, M extends DynamicMediator<V>>(
@@ -15,14 +20,18 @@ export class View extends Observer {
         const self = this;
         view.prototype.construct = function() {
             const mediatorInstance: M = new mediator(this);
-            self._observantsMap.set(this.uuid, mediatorInstance);
-            mediatorInstance.onRegister(self._facade, self._onSubscriptionChange);
+            self.__dynamicMediatorsMap.set(this.uuid, mediatorInstance);
+            mediatorInstance.onRegister(self._facade);
         };
 
         view.prototype.destruct = function() {
-            const mediatorInstance = self._observantsMap.delete(this.uuid);
+            const mediatorInstance = self.__dynamicMediatorsMap.delete(this.uuid);
             mediatorInstance.onRemove();
         };
+    }
+
+    public retrieveDynamicMediator<V extends IDynamicView, M extends DynamicMediator<V>>(view: V): M {
+        return this.__dynamicMediatorsMap.get(view.uuid) as M;
     }
 
     public registerMediator<V, M extends Mediator<V>>(mediator: new (viewComponent?: V) => M): void {
@@ -47,6 +56,12 @@ export class View extends Observer {
 
     public hasMediator<V, M extends Mediator<V>>(mediator: new (viewComponent?: V) => M): boolean {
         return super.hasObservant(mediator);
+    }
+    public handleNotification(notification: string, ...args: any[]): void {
+        super.handleNotification(notification, ...args);
+        this.__dynamicMediatorsMap.values.forEach(value => {
+            value.onNotification(notification, ...args);
+        });
     }
 }
 

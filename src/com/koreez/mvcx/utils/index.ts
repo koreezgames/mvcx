@@ -20,36 +20,54 @@ export function logProxy(consoleArgs: string[], name: string, action: string): v
 
 export function logNone(...args: any[]): void {}
 
-export class MVCMap<T> {
-    private __map: any;
+export class MVCMap<K, V> {
+    private __keys: K[];
+    private __values: V[];
 
     constructor() {
-        this.__map = new Object();
+        this.__keys = [];
+        this.__values = [];
     }
 
-    public set(key: string, value: T): void {
-        this.__map[key] = value;
+    public get keys(): K[] {
+        return this.__keys;
     }
 
-    public get(key: string): T {
-        return this.__map[key];
+    public get values(): V[] {
+        return this.__values;
     }
 
-    public has(key: string): boolean {
-        return !!this.__map[key];
+    public set(key: K, value: V): void {
+        this.__keys.push(key);
+        this.__values.push(value);
     }
 
-    public delete(key: string): T {
-        const value = this.__map[key];
-        delete this.__map[key];
-        return value;
+    public get(key: K): V {
+        const index = this.__keys.indexOf(key);
+        if (index !== -1) {
+            return this.__values[index];
+        }
+        return undefined;
     }
 
-    public forEach(fn: (key: string, value?: T) => any): void {
-        for (const key in this.__map) {
-            if (this.__map.hasOwnProperty(key)) {
-                fn(key, this.__map[key]);
-            }
+    public has(key: K): boolean {
+        return this.__keys.indexOf(key) !== -1;
+    }
+
+    public delete(key: K): V {
+        const index = this.__keys.indexOf(key);
+        if (index !== -1) {
+            const value = this.__values[index];
+            this.__keys.splice(index, 1);
+            this.__values.splice(index, 1);
+            return value;
+        }
+        return undefined;
+    }
+
+    public forEach(fn: (key: K, value?: V) => any): void {
+        for (let i = 0; i < this.__keys.length; ++i) {
+            fn(this.__keys[i], this.__values[i]);
         }
     }
 }

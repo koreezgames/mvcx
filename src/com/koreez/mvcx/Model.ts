@@ -4,7 +4,7 @@ import { MVCMap } from "./utils";
 
 export class Model {
     private __facade: Facade;
-    private __proxiesMap: MVCMap<Proxy<any>>;
+    private __proxiesMap: MVCMap<new () => Proxy<any>, Proxy<any>>;
 
     constructor(facade: Facade) {
         this.__facade = facade;
@@ -13,8 +13,7 @@ export class Model {
 
     public registerProxy<D, P extends Proxy<D>>(proxy: new () => P): P {
         const proxyInstance = new proxy();
-        const name = proxyInstance.constructor.name;
-        this.__proxiesMap.set(name, proxyInstance);
+        this.__proxiesMap.set(proxy, proxyInstance);
         proxyInstance.onRegister(this.__facade);
         return proxyInstance;
     }
@@ -24,20 +23,16 @@ export class Model {
             return;
         }
 
-        const key = proxy.name;
-        let proxyInstance = this.__proxiesMap.get(key);
-        this.__proxiesMap.delete(key);
-
+        let proxyInstance = this.__proxiesMap.get(proxy);
+        this.__proxiesMap.delete(proxy);
         proxyInstance.onRemove();
     }
 
     public hasProxy<D, P extends Proxy<D>>(proxy: new () => P): boolean {
-        const key = proxy.name;
-        return this.__proxiesMap.has(key);
+        return this.__proxiesMap.has(proxy);
     }
 
     public retrieveProxy<D, P extends Proxy<D>>(proxy: new () => P): P {
-        const key = proxy.name;
-        return this.__proxiesMap.get(key) as P;
+        return this.__proxiesMap.get(proxy) as P;
     }
 }

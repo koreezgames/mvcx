@@ -11,7 +11,7 @@ export class Controller {
         `background: ${"#3F234E"}`
     ];
 
-    private __commandsMap: MVCMap<ICommand>;
+    private __commandsMap: MVCMap<string, ICommand>;
     private __facade: Facade;
     private __logger: (consoleArgs: string[], notificationName: string, commandName: string) => void;
 

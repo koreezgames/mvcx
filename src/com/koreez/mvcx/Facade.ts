@@ -59,8 +59,12 @@ export class Facade {
         this.__view.wakeMediator(mediator);
     }
 
-    public retrieveMediator<V, M extends Mediator<V>>(mediator: new (viewComponent?: V) => M): Mediator<V> {
-        return this.__view.retrieveMediator(mediator);
+    public retrieveMediator<V, M extends Mediator<V>>(mediator: new (viewComponent?: V) => M): M {
+        return this.__view.retrieveMediator(mediator) as M;
+    }
+
+    public retrieveDynamicMediator<V extends IDynamicView, M extends DynamicMediator<V>>(view: V): M {
+        return this.__view.retrieveDynamicMediator(view);
     }
 
     public hasMediator<V, M extends Mediator<V>>(mediator: new (viewComponent?: V) => M): boolean {

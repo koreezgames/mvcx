@@ -8,11 +8,8 @@ import CellView from "./CellView";
 export default class CellViewMediator extends DynamicMediator<CellView> {
     public static NAME = "ImagesViewMediator";
 
-    public onRegister(
-        facade: Facade,
-        onMediatorNotificationSubscriptionChange: (notification: string, mediatorName: string, subscribe: boolean) => void
-    ) {
-        super.onRegister(facade, onMediatorNotificationSubscriptionChange);
+    public onRegister(facade: Facade) {
+        super.onRegister(facade);
         this.view.onClick.add(this.onViewClick, this);
 
         // this._subscribe(BoardProxy.DATA_READY, this._onDataReady);

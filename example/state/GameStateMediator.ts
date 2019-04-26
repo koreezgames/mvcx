@@ -18,11 +18,8 @@ export default class GameStateMediator extends Mediator<GameState> {
         this.view.onReady.add(this._onStateReady, this);
     }
 
-    public onRegister(
-        facade: Facade,
-        onMediatorNotificationSubscriptionChange: (notification: string, mediatorName: string, subscribe: boolean) => void
-    ) {
-        super.onRegister(facade, onMediatorNotificationSubscriptionChange);
+    public onRegister(facade: Facade) {
+        super.onRegister(facade);
         this.facade.registerMediator(ProgressViewMediator);
         this.facade.registerMediator(BoardViewMediator);
     }

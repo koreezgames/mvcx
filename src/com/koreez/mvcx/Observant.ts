@@ -20,61 +20,52 @@ export class Observant {
     ];
 
     protected _facade: Facade;
-    protected _interests: MVCMap<any>;
+    protected _interests: MVCMap<string, INotificationHandler>;
     protected _sleeping: boolean;
     protected _logger: (consoleArgs: string[], name: string, action: string) => void;
-
-    protected _onSubscriptionChange: (notification: string, mediatorName: string, subscribe: boolean) => void;
 
     constructor() {
         this._interests = new MVCMap();
     }
 
-    public onRegister(
-        facade: Facade,
-        onSubscriptionChange: (notification: string, mediatorName: string, subscribe: boolean) => void
-    ): void {
+    public onRegister(facade: Facade): void {
         this._facade = facade;
         this._logger = this._facade.debug ? logObservant : logNone;
-        this._onSubscriptionChange = onSubscriptionChange;
         this._logger(Observant._consoleArgs, this.observantName, "register");
         this.onWake();
     }
 
     public onRemove(): void {
         this.onSleep();
-        this._onSubscriptionChange = null;
         this._logger(Observant._consoleArgs, this.observantName, "remove");
     }
 
     public onSleep(): void {
         this._sleeping = true;
-        this._interests.forEach((notification: string) => this._unsubscribe(notification));
         this._logger(Observant._consoleArgs, this.observantName, "sleep");
     }
 
     public onWake(): void {
-        this._interests.forEach((notification: string, callback: any) => this._subscribe(notification, callback));
         this._logger(Observant._consoleArgs, this.observantName, "wake");
         this._sleeping = false;
     }
 
     public onNotification(notification: string, ...args: any[]): void {
+        if (this._sleeping) {
+            return;
+        }
         const callback = this._interests.get(notification);
-        callback.call(this, ...args);
+        // tslint:disable-next-line:no-unused-expression
+        callback && callback.call(this, ...args);
     }
 
-    protected _subscribe(notification: string, callback: any): void {
-        if (!this._sleeping) {
-            this._interests.set(notification, callback);
-        }
-        this._onSubscriptionChange(notification, this.observantName, true);
+    protected _subscribe(notification: string, callback: INotificationHandler): void {
+        this._interests.set(notification, callback);
     }
 
     protected _unsubscribe(notification: string): void {
-        if (!this._sleeping) {
-            this._interests.delete(notification);
-        }
-        this._onSubscriptionChange(notification, this.observantName, false);
+        this._interests.delete(notification);
     }
 }
+
+type INotificationHandler = (...args: any[]) => void;

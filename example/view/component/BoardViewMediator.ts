@@ -8,11 +8,8 @@ import BoardView from "./BoardView";
 export default class BoardViewMediator extends Mediator<BoardView> {
     public static NAME = "ImagesViewMediator";
 
-    public onRegister(
-        facade: Facade,
-        onMediatorNotificationSubscriptionChange: (notification: string, mediatorName: string, subscribe: boolean) => void
-    ) {
-        super.onRegister(facade, onMediatorNotificationSubscriptionChange);
+    public onRegister(facade: Facade) {
+        super.onRegister(facade);
 
         this.setView(new BoardView());
         (<any>window).game.world.add(this.view);
