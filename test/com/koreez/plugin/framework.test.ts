@@ -293,6 +293,8 @@ describe("mvcx", () => {
             const testView = new TestView();
             setTimeout(() => {
                 const testMediator = facade.retrieveDynamicMediator(testView) as TestMediator;
+                const testMediator1 = facade.retrieveDynamicMediator(testView.uuid) as TestMediator;
+                assert.strictEqual(testMediator, testMediator1);
                 let handledNotifications = 0;
                 facade.sendNotification("notification");
                 ++handledNotifications;

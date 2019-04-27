@@ -63,7 +63,7 @@ export class Facade {
         return this.__view.retrieveMediator(mediator) as M;
     }
 
-    public retrieveDynamicMediator<V extends IDynamicView, M extends DynamicMediator<V>>(view: V): M {
+    public retrieveDynamicMediator<V extends IDynamicView, M extends DynamicMediator<V>>(view: V | string): M {
         return this.__view.retrieveDynamicMediator(view);
     }
 

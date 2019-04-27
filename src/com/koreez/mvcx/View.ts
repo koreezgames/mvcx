@@ -30,8 +30,9 @@ export class View extends Observer {
         };
     }
 
-    public retrieveDynamicMediator<V extends IDynamicView, M extends DynamicMediator<V>>(view: V): M {
-        return this.__dynamicMediatorsMap.get(view.uuid) as M;
+    public retrieveDynamicMediator<V extends IDynamicView, M extends DynamicMediator<V>>(view: V | string): M {
+        const uuid: any = typeof view === "string" || view instanceof String ? view : view.uuid;
+        return this.__dynamicMediatorsMap.get(uuid) as M;
     }
 
     public registerMediator<V, M extends Mediator<V>>(mediator: new (viewComponent?: V) => M): void {
