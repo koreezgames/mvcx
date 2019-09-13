@@ -60,7 +60,7 @@ export class View extends Observer {
     }
     public handleNotification(notification: string, ...args: any[]): void {
         super.handleNotification(notification, ...args);
-        this.__dynamicMediatorsMap.values.forEach(value => {
+        this.__dynamicMediatorsMap.forEach((key, value) => {
             value.onNotification(notification, ...args);
         });
     }

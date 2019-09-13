@@ -66,8 +66,11 @@ export class MVCMap<K, V> {
     }
 
     public forEach(fn: (key: K, value?: V) => any): void {
-        for (let i = 0; i < this.__keys.length; ++i) {
+        const keys = this.__keys;
+        let i = keys.length - 1;
+        while (i > -1) {
             fn(this.__keys[i], this.__values[i]);
+            i -= 1;
         }
     }
 }
