@@ -10,6 +10,14 @@ import { DynamicMediator, Facade, IDynamicView, Mediator, Observant, Proxy } fro
 import "../../../entry";
 
 describe("mvcx", () => {
+    beforeEach(function() {
+        // Silence the console
+        console.log = function() {};
+    });
+    afterEach(function() {
+        // Reset console
+        delete console.log;
+    });
     describe("Notification", () => {
         describe("SendNotification", () => {
             it("Trow an exception when send invalid notification", done => {
@@ -21,7 +29,7 @@ describe("mvcx", () => {
                     const facade = Facade.Instance;
                     facade.initialize(false);
                     (() => {
-                        //@ts-ignore
+                        // @ts-ignore
                         facade.sendNotification(NaN);
                     }).should.throw();
                     (() => {
@@ -34,11 +42,11 @@ describe("mvcx", () => {
                         facade.sendNotification("");
                     }).should.throw();
                     (() => {
-                        //@ts-ignore
+                        // @ts-ignore
                         facade.sendNotification({});
                     }).should.throw();
                     (() => {
-                        //@ts-ignore
+                        // @ts-ignore
                         facade.sendNotification([]);
                     }).should.throw();
                     done();
@@ -56,7 +64,7 @@ describe("mvcx", () => {
                     const facade = Facade.Instance;
                     facade.initialize(false);
                     (() => {
-                        //@ts-ignore
+                        // @ts-ignore
                         facade.registerCommand(NaN, (notification: string, param: any) => {});
                     }).should.throw();
                     (() => {
@@ -69,11 +77,11 @@ describe("mvcx", () => {
                         facade.registerCommand("", (notification: string, param: any) => {});
                     }).should.throw();
                     (() => {
-                        //@ts-ignore
+                        // @ts-ignore
                         facade.registerCommand({}, (notification: string, param: any) => {});
                     }).should.throw();
                     (() => {
-                        //@ts-ignore
+                        // @ts-ignore
                         facade.registerCommand([], (notification: string, param: any) => {});
                     }).should.throw();
                     done();
@@ -91,7 +99,7 @@ describe("mvcx", () => {
                     const facade = Facade.Instance;
                     facade.initialize(false);
                     (() => {
-                        //@ts-ignore
+                        // @ts-ignore
                         facade.removeCommand(NaN);
                     }).should.throw();
                     (() => {
@@ -104,11 +112,11 @@ describe("mvcx", () => {
                         facade.removeCommand("");
                     }).should.throw();
                     (() => {
-                        //@ts-ignore
+                        // @ts-ignore
                         facade.removeCommand({});
                     }).should.throw();
                     (() => {
-                        //@ts-ignore
+                        // @ts-ignore
                         facade.removeCommand([]);
                     }).should.throw();
                     done();
@@ -126,7 +134,7 @@ describe("mvcx", () => {
                     const facade = Facade.Instance;
                     facade.initialize(false);
                     (() => {
-                        //@ts-ignore
+                        // @ts-ignore
                         facade.executeCommand(NaN, (notification: string, param: any) => {});
                     }).should.throw();
                     (() => {
@@ -139,11 +147,11 @@ describe("mvcx", () => {
                         facade.executeCommand("", (notification: string, param: any) => {});
                     }).should.throw();
                     (() => {
-                        //@ts-ignore
+                        // @ts-ignore
                         facade.executeCommand({}, (notification: string, param: any) => {});
                     }).should.throw();
                     (() => {
-                        //@ts-ignore
+                        // @ts-ignore
                         facade.executeCommand([], (notification: string, param: any) => {});
                     }).should.throw();
                     done();
@@ -162,7 +170,7 @@ describe("mvcx", () => {
 
                     public addHandler(): void {
                         (() => {
-                            //@ts-ignore
+                            // @ts-ignore
                             this._subscribe(NaN, (notification: string, param: any) => {});
                         }).should.throw();
                         (() => {
@@ -175,11 +183,11 @@ describe("mvcx", () => {
                             this._subscribe("", (notification: string, param: any) => {});
                         }).should.throw();
                         (() => {
-                            //@ts-ignore
+                            // @ts-ignore
                             this._subscribe({}, (notification: string, param: any) => {});
                         }).should.throw();
                         (() => {
-                            //@ts-ignore
+                            // @ts-ignore
                             this._subscribe([], (notification: string, param: any) => {});
                         }).should.throw();
                     }
@@ -207,7 +215,7 @@ describe("mvcx", () => {
 
                     public removeHandler(): void {
                         (() => {
-                            //@ts-ignore
+                            // @ts-ignore
                             this._unsubscribe(NaN);
                         }).should.throw();
                         (() => {
@@ -220,11 +228,11 @@ describe("mvcx", () => {
                             this._unsubscribe("");
                         }).should.throw();
                         (() => {
-                            //@ts-ignore
+                            // @ts-ignore
                             this._unsubscribe({});
                         }).should.throw();
                         (() => {
-                            //@ts-ignore
+                            // @ts-ignore
                             this._unsubscribe([]);
                         }).should.throw();
                     }
