@@ -67,6 +67,9 @@ export class Observant {
     }
 
     protected _unsubscribe(notification: string): void {
+        if (notValidNotification(notification)) {
+            throw new Error(`Can't unsubscribe from notification  "${notification}"`);
+        }
         this._interests.delete(notification);
     }
 }
