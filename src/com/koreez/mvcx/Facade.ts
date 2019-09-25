@@ -5,7 +5,7 @@ import { Model } from "./Model";
 import { Observant } from "./Observant";
 import { Observer } from "./Observer";
 import { Proxy } from "./Proxy";
-import { logNone, logNotification } from "./utils";
+import { logNone, logNotification, notValidNotification } from "./utils";
 import { IDynamicView, View } from "./View";
 
 export class Facade {
@@ -30,6 +30,9 @@ export class Facade {
     }
 
     public sendNotification(notification: string, ...args: any[]) {
+        if (notValidNotification(notification)) {
+            throw new Error(`Can't send notification  "${notification}"`);
+        }
         this.__logger(Facade._consoleArgs, notification);
         this.__controller.executeCommand(notification, undefined, ...args);
         this.__observer.handleNotification(notification, ...args);
@@ -88,14 +91,23 @@ export class Facade {
     }
     //
     public registerCommand(notificationName: string, command: ICommand): void {
+        if (notValidNotification(notificationName)) {
+            throw new Error(`Can't register command on notification  "${notificationName}"`);
+        }
         this.__controller.registerCommand(notificationName, command);
     }
 
     public removeCommand(notificationName: string): void {
+        if (notValidNotification(notificationName)) {
+            throw new Error(`Can't remove command from notification  "${notificationName}"`);
+        }
         this.__controller.removeCommand(notificationName);
     }
 
     public executeCommand(notificationName: string, command: ICommand, ...args: any[]): void {
+        if (notValidNotification(notificationName)) {
+            throw new Error(`Can't execute command on notification  "${notificationName}"`);
+        }
         this.__controller.executeCommand(notificationName, command, ...args);
     }
     //

@@ -18,6 +18,10 @@ export function logProxy(consoleArgs: string[], name: string, action: string): v
     console.log.apply(console, consoleArgs);
 }
 
+export function notValidNotification(notification: any): boolean {
+    return typeof notification !== "string" || notification.length === 0;
+}
+
 export function logNone(...args: any[]): void {}
 
 export class MVCMap<K, V> {
