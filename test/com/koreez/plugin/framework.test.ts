@@ -10,6 +10,239 @@ import { DynamicMediator, Facade, IDynamicView, Mediator, Observant, Proxy } fro
 import "../../../entry";
 
 describe("mvcx", () => {
+    describe("Notification", () => {
+        describe("SendNotification", () => {
+            it("Trow an exception when send invalid notification", done => {
+                const config = {
+                    create
+                };
+
+                function create() {
+                    const facade = Facade.Instance;
+                    facade.initialize(false);
+                    (() => {
+                        //@ts-ignore
+                        facade.sendNotification(NaN);
+                    }).should.throw();
+                    (() => {
+                        facade.sendNotification(null);
+                    }).should.throw();
+                    (() => {
+                        facade.sendNotification(undefined);
+                    }).should.throw();
+                    (() => {
+                        facade.sendNotification("");
+                    }).should.throw();
+                    (() => {
+                        //@ts-ignore
+                        facade.sendNotification({});
+                    }).should.throw();
+                    (() => {
+                        //@ts-ignore
+                        facade.sendNotification([]);
+                    }).should.throw();
+                    done();
+                }
+                (window as any).game = new Phaser.Game(800, 600, Phaser.CANVAS, null, config);
+            });
+        });
+        describe("RegisterCommand", () => {
+            it("Trow an exception when register command on invalid notification", done => {
+                const config = {
+                    create
+                };
+
+                function create() {
+                    const facade = Facade.Instance;
+                    facade.initialize(false);
+                    (() => {
+                        //@ts-ignore
+                        facade.registerCommand(NaN, (notification: string, param: any) => {});
+                    }).should.throw();
+                    (() => {
+                        facade.registerCommand(null, (notification: string, param: any) => {});
+                    }).should.throw();
+                    (() => {
+                        facade.registerCommand(undefined, (notification: string, param: any) => {});
+                    }).should.throw();
+                    (() => {
+                        facade.registerCommand("", (notification: string, param: any) => {});
+                    }).should.throw();
+                    (() => {
+                        //@ts-ignore
+                        facade.registerCommand({}, (notification: string, param: any) => {});
+                    }).should.throw();
+                    (() => {
+                        //@ts-ignore
+                        facade.registerCommand([], (notification: string, param: any) => {});
+                    }).should.throw();
+                    done();
+                }
+                (window as any).game = new Phaser.Game(800, 600, Phaser.CANVAS, null, config);
+            });
+        });
+        describe("RemoveCommand", () => {
+            it("Trow an exception when remove command from invalid notification", done => {
+                const config = {
+                    create
+                };
+
+                function create() {
+                    const facade = Facade.Instance;
+                    facade.initialize(false);
+                    (() => {
+                        //@ts-ignore
+                        facade.removeCommand(NaN);
+                    }).should.throw();
+                    (() => {
+                        facade.removeCommand(null);
+                    }).should.throw();
+                    (() => {
+                        facade.removeCommand(undefined);
+                    }).should.throw();
+                    (() => {
+                        facade.removeCommand("");
+                    }).should.throw();
+                    (() => {
+                        //@ts-ignore
+                        facade.removeCommand({});
+                    }).should.throw();
+                    (() => {
+                        //@ts-ignore
+                        facade.removeCommand([]);
+                    }).should.throw();
+                    done();
+                }
+                (window as any).game = new Phaser.Game(800, 600, Phaser.CANVAS, null, config);
+            });
+        });
+        describe("ExecuteCommand", () => {
+            it("Trow an exception when execute command on invalid notification", done => {
+                const config = {
+                    create
+                };
+
+                function create() {
+                    const facade = Facade.Instance;
+                    facade.initialize(false);
+                    (() => {
+                        //@ts-ignore
+                        facade.executeCommand(NaN, (notification: string, param: any) => {});
+                    }).should.throw();
+                    (() => {
+                        facade.executeCommand(null, (notification: string, param: any) => {});
+                    }).should.throw();
+                    (() => {
+                        facade.executeCommand(undefined, (notification: string, param: any) => {});
+                    }).should.throw();
+                    (() => {
+                        facade.executeCommand("", (notification: string, param: any) => {});
+                    }).should.throw();
+                    (() => {
+                        //@ts-ignore
+                        facade.executeCommand({}, (notification: string, param: any) => {});
+                    }).should.throw();
+                    (() => {
+                        //@ts-ignore
+                        facade.executeCommand([], (notification: string, param: any) => {});
+                    }).should.throw();
+                    done();
+                }
+                (window as any).game = new Phaser.Game(800, 600, Phaser.CANVAS, null, config);
+            });
+        });
+        describe("Subscribe", () => {
+            it("Trow an exception when subscribe to invalid notification", done => {
+                class TestMediator extends Mediator<Phaser.World> {
+                    public onRegister(facade: Facade) {
+                        super.onRegister(facade);
+                        this.setView((window as any).game.world);
+                        this.addHandler();
+                    }
+
+                    public addHandler(): void {
+                        (() => {
+                            //@ts-ignore
+                            this._subscribe(NaN, (notification: string, param: any) => {});
+                        }).should.throw();
+                        (() => {
+                            this._subscribe(null, (notification: string, param: any) => {});
+                        }).should.throw();
+                        (() => {
+                            this._subscribe(undefined, (notification: string, param: any) => {});
+                        }).should.throw();
+                        (() => {
+                            this._subscribe("", (notification: string, param: any) => {});
+                        }).should.throw();
+                        (() => {
+                            //@ts-ignore
+                            this._subscribe({}, (notification: string, param: any) => {});
+                        }).should.throw();
+                        (() => {
+                            //@ts-ignore
+                            this._subscribe([], (notification: string, param: any) => {});
+                        }).should.throw();
+                    }
+                }
+                const config = {
+                    create
+                };
+
+                function create() {
+                    const facade = Facade.Instance;
+                    facade.registerMediator(TestMediator);
+                    done();
+                }
+                (window as any).game = new Phaser.Game(800, 600, Phaser.CANVAS, null, config);
+            });
+        });
+        describe("Unsubscribe", () => {
+            it("Trow an exception when unsubscribe from invalid notification", done => {
+                class TestMediator extends Mediator<Phaser.World> {
+                    public onRegister(facade: Facade) {
+                        super.onRegister(facade);
+                        this.setView((window as any).game.world);
+                        this.removeHandler();
+                    }
+
+                    public removeHandler(): void {
+                        (() => {
+                            //@ts-ignore
+                            this._unsubscribe(NaN);
+                        }).should.throw();
+                        (() => {
+                            this._unsubscribe(null);
+                        }).should.throw();
+                        (() => {
+                            this._unsubscribe(undefined);
+                        }).should.throw();
+                        (() => {
+                            this._unsubscribe("");
+                        }).should.throw();
+                        (() => {
+                            //@ts-ignore
+                            this._unsubscribe({});
+                        }).should.throw();
+                        (() => {
+                            //@ts-ignore
+                            this._unsubscribe([]);
+                        }).should.throw();
+                    }
+                }
+                const config = {
+                    create
+                };
+
+                function create() {
+                    const facade = Facade.Instance;
+                    facade.registerMediator(TestMediator);
+                    done();
+                }
+                (window as any).game = new Phaser.Game(800, 600, Phaser.CANVAS, null, config);
+            });
+        });
+    });
+
     it("Faced", done => {
         const config = {
             create
