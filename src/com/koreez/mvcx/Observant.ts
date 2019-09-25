@@ -1,5 +1,5 @@
 import { Facade } from "./Facade";
-import { logNone, logObservant, MVCMap } from "./utils";
+import { logNone, logObservant, MVCMap, notValidNotification } from "./utils";
 
 export class Observant {
     public get observantName(): string {
@@ -60,6 +60,9 @@ export class Observant {
     }
 
     protected _subscribe(notification: string, callback: INotificationHandler): void {
+        if (notValidNotification(notification)) {
+            throw new Error(`Can't subscribe to notification  "${notification}"`);
+        }
         this._interests.set(notification, callback);
     }
 
